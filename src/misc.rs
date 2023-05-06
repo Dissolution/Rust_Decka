@@ -1,3 +1,4 @@
+use std::cmp::Ordering;
 use std::fmt::*;
 
 pub fn get_two_mut<T>(slice: &mut [T], index1: usize, index2: usize) -> Option<(&mut T, &mut T)> {
@@ -12,14 +13,38 @@ pub fn get_two_mut<T>(slice: &mut [T], index1: usize, index2: usize) -> Option<(
     }
 }
 
+pub fn get_ordering<T>(first: &T, second: &T, rank_order: &[T]) -> Option<Ordering>
+where
+    T: PartialEq,
+{
+    // find the index/value for self
+    let self_index = rank_order.iter().position(|r| r == first)?;
+
+    // find the index/value for other
+    let other_index = rank_order.iter().position(|r| r == second)?;
+
+    // compare
+    let ordering = self_index.cmp(&other_index);
+    Some(ordering)
+}
 
 pub struct Fmt<F>(pub F)
-    where F: Fn(&mut Formatter) -> Result;
+where
+    F: Fn(&mut Formatter) -> Result;
 
 impl<F> Debug for Fmt<F>
-    where F: Fn(&mut Formatter) -> Result
+where
+    F: Fn(&mut Formatter) -> Result,
 {
     fn fmt(&self, f: &mut Formatter) -> Result {
         (self.0)(f)
     }
+}
+
+pub trait LongDisplay {
+    fn display(&self, f: &mut Formatter<'_>) -> Result;
+}
+
+pub trait ShortDisplay<T: Display = Self>: Display {
+    fn short_display(&self, f: &mut Formatter<'_>) -> Result;
 }

@@ -1,14 +1,21 @@
+mod card;
+mod card_pile;
+mod decision;
 #[allow(dead_code)]
 #[allow(unused)]
 #[allow(unused_imports)]
 mod deck;
-mod cards;
+mod game_result;
+mod game_state;
+mod macros;
 mod misc;
-mod game;
-
+mod rank;
+mod suit;
+mod other;
 
 use crate::deck::*;
-use crate::game::*;
+use crate::game_result::GameResult;
+use crate::game_state::*;
 use crate::misc::*;
 
 fn main() {
@@ -16,8 +23,8 @@ fn main() {
     let rng = fastrand::Rng::with_seed(147u64);
 
     // Create the initial game state
-    let mut game_state = GameState::new();
-    Deck::copy_new_standard_52(&mut game_state.deck);
+    let mut game_state = GameState::new(Deck::new_standard_52());
+    //Deck::copy_new_standard_52(&mut game_state.deck);
 
     // Start testing
     let mut shuffle_count = 0;
@@ -30,12 +37,22 @@ fn main() {
         let clone = game_state.clone();
         let result = play_game_state(clone);
         // Did we get anything interesting?
-        let wins: Vec<&GameResult> = result
-            .iter()
-            .filter(|r| r.win)
-            .collect();
+        let wins: Vec<&GameResult> = result.iter().filter(|r| r.win).collect();
         if !wins.is_empty() {
-            println!("Shuffle #{}: {} wins, {} losses", shuffle_count, wins.len(), result.len() - wins.len());
+            println!(
+                "Shuffle #{}: {} wins, {} losses",
+                shuffle_count,
+                wins.len(),
+                result.len() - wins.len()
+            );
+            println!();
+        }
+
+        let perfects: Vec<&GameResult> = result
+            .iter()
+            .filter(|r| r.win && r.pile_count == 4)
+            .collect();
+        if !perfects.is_empty() {
             println!();
         }
 
@@ -71,7 +88,9 @@ fn play_game_state(game_state: GameState) -> Vec<GameResult> {
                 let result = game_state.current_result();
                 println!("{:?}", result);
 
-                if result.is_none() { panic!("WTF")}
+                if result.is_none() {
+                    panic!("WTF")
+                }
 
                 let game_result = result.unwrap();
                 game_results.push(game_result);
