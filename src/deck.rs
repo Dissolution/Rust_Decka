@@ -2,10 +2,7 @@ use std::fmt;
 use std::fmt::*;
 
 use crate::cards::*;
-
-pub trait CardDisplay {
-    fn display(&self, f: &mut Formatter<'_>) -> Result;
-}
+use crate::misc::LongDisplay;
 
 
 pub struct Deck {
@@ -37,7 +34,7 @@ impl Deck {
 
 pub type CardPile = Vec<Card>;
 
-impl CardDisplay for CardPile {
+impl LongDisplay for CardPile {
     fn display(&self, f: &mut Formatter<'_>) -> Result {
         f.write_char('[')?;
         for card in self.iter() {

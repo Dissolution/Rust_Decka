@@ -23,3 +23,11 @@ impl<F> Debug for Fmt<F>
         (self.0)(f)
     }
 }
+
+pub trait LongDisplay {
+    fn display(&self, f: &mut Formatter<'_>) -> Result;
+}
+
+pub trait ShortDisplay<T: Display = Self>: Display {
+    fn short_display(&self, f: &mut Formatter<'_>) -> Result;
+}

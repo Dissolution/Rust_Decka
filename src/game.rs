@@ -5,6 +5,41 @@ use crate::cards::*;
 use crate::misc;
 use crate::misc::*;
 
+
+
+
+#[derive(Clone, Debug)]
+pub struct GameResult {
+    pub win: bool,
+    pub pile_count: usize,
+    pub initial_state: String,
+    pub decision_chance: f64,
+    pub decisions: Vec<Decision>,
+}
+
+
+#[derive(Clone, Copy, Debug)]
+pub struct Decision {
+    pub deal_count: usize,
+    pub fill_pile: usize,
+    pub hole_pile: usize,
+}
+
+
+#[derive(Clone, Debug)]
+pub struct GameState {
+    pub deck: CardPile,
+    pub piles: [CardPile; 4],
+    pub discard: CardPile,
+
+    pub initial_state: String,
+    pub decision_chance: f64,
+    pub decisions: Vec<Decision>,
+}
+
+
+
+
 fn pile_move_card(source_pile: &mut CardPile, dest_pile: &mut CardPile) {
     let card = source_pile.pop().unwrap();
     dest_pile.push(card);
@@ -29,14 +64,6 @@ fn suit_rank_compare(left: &Card, right: &Card) -> i8 {
 }
 
 
-#[derive(Clone, Debug)]
-pub struct GameResult {
-    pub win: bool,
-    pub pile_count: usize,
-    pub decision_chance: f64,
-    pub decisions: Vec<Decision>,
-}
-
 impl Display for GameResult {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
         write!(f, r#"
@@ -54,12 +81,7 @@ impl Display for GameResult {
 }
 
 
-#[derive(Clone, Copy, Debug)]
-pub struct Decision {
-    pub deal_count: usize,
-    pub fill_pile: usize,
-    pub hole_pile: usize,
-}
+
 
 impl Display for Decision {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
@@ -68,17 +90,9 @@ impl Display for Decision {
 }
 
 
-#[derive(Clone, Debug)]
-pub struct GameState {
-    pub deck: CardPile,
-    pub piles: [CardPile; 4],
-    pub discard: CardPile,
 
-    pub decision_chance: f64,
-    pub decisions: Vec<Decision>,
-}
 
-impl CardDisplay for GameState {
+impl LongDisplay for GameState {
     fn display(&self, f: &mut Formatter<'_>) -> Result {
         f.write_str("Deck:")?;
         self.deck.display(f)?;
@@ -105,9 +119,10 @@ impl Display for GameState {
 
 
 impl GameState {
-    pub fn new() -> GameState {
+    pub fn new(deck: Vec<Card>) -> GameState {
         GameState {
-            deck: Vec::with_capacity(52),
+            initial_state: format!("{:?}", deck),
+            deck,
             piles: [Vec::with_capacity(13), Vec::with_capacity(13), Vec::with_capacity(13), Vec::with_capacity(13)],
             discard: Vec::with_capacity(52),
             decision_chance: 1.0,
@@ -137,6 +152,7 @@ impl GameState {
             Some(GameResult {
                 win: is_win,
                 pile_count,
+                initial_state: self.initial_state.clone(),
                 decision_chance: self.decision_chance,
                 decisions: self.decisions.clone(),
             })

@@ -16,8 +16,8 @@ fn main() {
     let rng = fastrand::Rng::with_seed(147u64);
 
     // Create the initial game state
-    let mut game_state = GameState::new();
-    Deck::copy_new_standard_52(&mut game_state.deck);
+    let mut game_state = GameState::new(Deck::new_standard_52());
+    //Deck::copy_new_standard_52(&mut game_state.deck);
 
     // Start testing
     let mut shuffle_count = 0;
@@ -36,6 +36,14 @@ fn main() {
             .collect();
         if !wins.is_empty() {
             println!("Shuffle #{}: {} wins, {} losses", shuffle_count, wins.len(), result.len() - wins.len());
+            println!();
+        }
+
+        let perfects: Vec<&GameResult> = result
+            .iter()
+            .filter(|r| r.win && r.pile_count == 4)
+            .collect();
+        if !perfects.is_empty() {
             println!();
         }
 

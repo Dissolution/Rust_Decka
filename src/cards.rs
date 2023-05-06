@@ -1,5 +1,5 @@
 use std::fmt::*;
-use crate::deck::CardDisplay;
+use crate::misc::LongDisplay;
 
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -16,7 +16,7 @@ impl Suit {
     }
 }
 
-impl CardDisplay for Suit {
+impl LongDisplay for Suit {
     fn display(&self, f: &mut Formatter<'_>) -> Result {
         match self {
             Suit::Club => {
@@ -93,7 +93,7 @@ impl Rank {
 }
 
 
-impl CardDisplay for Rank {
+impl LongDisplay for Rank {
     fn display(&self, f: &mut Formatter<'_>) -> Result {
         match self {
             Rank::Ace => {
@@ -154,7 +154,7 @@ pub struct Card {
     pub rank: Rank,
 }
 
-impl CardDisplay for Card {
+impl LongDisplay for Card {
     fn display(&self, f: &mut Formatter<'_>) -> Result {
         //f.write_char('[')?;
         self.rank.display(f)?;
