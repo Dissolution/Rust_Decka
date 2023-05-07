@@ -56,6 +56,14 @@ fn main() {
             println!();
         }
 
+        let perfects: Vec<&GameResult> = result
+            .iter()
+            .filter(|r| r.win && r.pile_count == 4)
+            .collect();
+        if !perfects.is_empty() {
+            println!();
+        }
+
         // try the next shuffle
     }
 }
