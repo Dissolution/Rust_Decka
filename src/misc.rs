@@ -28,23 +28,15 @@ where
     Some(ordering)
 }
 
-pub struct Fmt<F>(pub F)
+pub struct DbgFmtFn<F>(pub F)
 where
     F: Fn(&mut Formatter) -> Result;
 
-impl<F> Debug for Fmt<F>
+impl<F> Debug for DbgFmtFn<F>
 where
     F: Fn(&mut Formatter) -> Result,
 {
     fn fmt(&self, f: &mut Formatter) -> Result {
         (self.0)(f)
     }
-}
-
-pub trait LongDisplay {
-    fn display(&self, f: &mut Formatter<'_>) -> Result;
-}
-
-pub trait ShortDisplay<T: Display = Self>: Display {
-    fn short_display(&self, f: &mut Formatter<'_>) -> Result;
 }

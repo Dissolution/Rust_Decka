@@ -12,6 +12,7 @@ mod misc;
 mod rank;
 mod suit;
 mod other;
+mod format;
 
 use crate::deck::*;
 use crate::game_result::GameResult;
@@ -56,14 +57,6 @@ fn main() {
             println!();
         }
 
-        let perfects: Vec<&GameResult> = result
-            .iter()
-            .filter(|r| r.win && r.pile_count == 4)
-            .collect();
-        if !perfects.is_empty() {
-            println!();
-        }
-
         // try the next shuffle
     }
 }
@@ -91,7 +84,7 @@ fn play_game_state(game_state: GameState) -> Vec<GameResult> {
                 }
             }
             None => {
-                let format_string = format!("{:?}", Fmt(|f| game_state.display(f)));
+                let format_string = format!("{:?}", DbgFmtFn(|f| game_state.display(f)));
                 println!("{}", format_string);
                 let result = game_state.current_result();
                 println!("{:?}", result);

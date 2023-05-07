@@ -75,6 +75,7 @@ impl GameState {
                 win: is_win,
                 pile_count,
                 initial_state: self.initial_state.clone(),
+                final_state: self.short_display(),
                 decision_chance: self.decision_chance,
                 decisions: self.decisions.clone(),
             })
@@ -232,6 +233,12 @@ impl Display for GameState {
             "Deck: {:?}\tPileA: {:?}\tPileB: {:?}\tPileC: {:?}\tPileD: {:?}\tDiscard: {:?}",
             self.deck, self.piles[0], self.piles[1], self.piles[2], self.piles[3], self.discard
         )
+    }
+}
+
+impl ShortDisplay for GameState {
+    fn short_display(&self, f: &mut Formatter<'_>) -> Result {
+        
     }
 }
 

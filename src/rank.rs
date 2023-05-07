@@ -1,5 +1,6 @@
-use crate::misc::LongDisplay;
+
 use std::fmt::*;
+use crate::format::Formattable;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Rank {
@@ -63,12 +64,12 @@ impl TryFrom<u8> for Rank {
 
 impl Display for Rank {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
-        self.display(f)
+        Debug::fmt(self, f)
     }
 }
 
-impl LongDisplay for Rank {
-    fn display(&self, f: &mut Formatter<'_>) -> Result {
+impl Formattable for Rank {
+    fn format_emoji(&self, f: &mut Formatter<'_>) -> Result {
         match self {
             Rank::Ace => {
                 write!(f, "A")
@@ -110,6 +111,54 @@ impl LongDisplay for Rank {
                 write!(f, "K")
             }
         }
+    }
+
+    fn format_short(&self, f: &mut Formatter<'_>) -> Result {
+        match self {
+            Rank::Ace => {
+                write!(f, "A")
+            }
+            Rank::Two => {
+                write!(f, "2")
+            }
+            Rank::Three => {
+                write!(f, "3")
+            }
+            Rank::Four => {
+                write!(f, "4")
+            }
+            Rank::Five => {
+                write!(f, "5")
+            }
+            Rank::Six => {
+                write!(f, "6")
+            }
+            Rank::Seven => {
+                write!(f, "7")
+            }
+            Rank::Eight => {
+                write!(f, "8")
+            }
+            Rank::Nine => {
+                write!(f, "9")
+            }
+            Rank::Ten => {
+                write!(f, "X")
+            }
+            Rank::Jack => {
+                write!(f, "J")
+            }
+            Rank::Queen => {
+                write!(f, "Q")
+            }
+            Rank::King => {
+                write!(f, "K")
+            }
+        }
+    }
+
+    fn format_long(&self, f: &mut Formatter<'_>) -> Result {
+        Debug::fmt(self, f)
     }
 }
 

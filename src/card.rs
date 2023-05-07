@@ -1,7 +1,8 @@
-use crate::misc::LongDisplay;
+
 use crate::rank::Rank;
 use crate::suit::Suit;
 use std::fmt::*;
+use crate::format::Formattable;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Card {
@@ -40,12 +41,36 @@ impl Display for Card {
     }
 }
 
-impl LongDisplay for Card {
-    fn display(&self, f: &mut Formatter<'_>) -> Result {
-        //f.write_char('[')?;
-        self.rank.display(f)?;
-        self.suit.display(f)?;
-        //f.write_char(']')?;
-        Ok(())
+impl Formattable for Card {
+    fn format_emoji(&self, f: &mut Formatter<'_>) -> Result {
+        match (self.suit, self.rank) {
+            (Suit::Spade, Rank::Ace) => {
+                f.write_str("🂡")
+            },
+
+
+
+            _ => {
+                unimplemented!();
+            }
+        }
+    }
+
+    fn format_short(&self, f: &mut Formatter<'_>) -> Result {
+        todo!()
+    }
+
+    fn format_long(&self, f: &mut Formatter<'_>) -> Result {
+        todo!()
     }
 }
+
+// impl LongDisplay for Card {
+//     fn display(&self, f: &mut Formatter<'_>) -> Result {
+//         //f.write_char('[')?;
+//         self.rank.display(f)?;
+//         self.suit.display(f)?;
+//         //f.write_char(']')?;
+//         Ok(())
+//     }
+// }

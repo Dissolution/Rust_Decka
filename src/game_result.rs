@@ -6,6 +6,7 @@ pub struct GameResult {
     pub win: bool,
     pub pile_count: usize,
     pub initial_state: String,
+    pub final_state: String,
     pub decision_chance: f64,
     pub decisions: Vec<Decision>,
 }

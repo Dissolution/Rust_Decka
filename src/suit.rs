@@ -1,5 +1,5 @@
-use crate::misc::LongDisplay;
 use std::fmt::*;
+use crate::format::Formattable;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 //#[non_exhaustive]
@@ -47,6 +47,29 @@ impl TryFrom<u8> for Suit {
 
 impl Display for Suit {
     fn fmt(&self, f: &mut Formatter<'_>) -> Result {
+        Debug::fmt(self, f)
+    }
+}
+
+impl Formattable for Suit {
+    fn format_emoji(&self, f: &mut Formatter<'_>) -> Result {
+        match self {
+            Suit::Club => {
+                write!(f, "♣️")
+            }
+            Suit::Diamond => {
+                write!(f, "♦️")
+            }
+            Suit::Heart => {
+                write!(f, "♥️")
+            }
+            Suit::Spade => {
+                write!(f, "♠️")
+            }
+        }
+    }
+
+    fn format_short(&self, f: &mut Formatter<'_>) -> Result {
         match self {
             Suit::Club => {
                 write!(f, "♣")
@@ -62,26 +85,12 @@ impl Display for Suit {
             }
         }
     }
-}
 
-impl LongDisplay for Suit {
-    fn display(&self, f: &mut Formatter<'_>) -> Result {
-        match self {
-            Suit::Club => {
-                write!(f, "C")
-            }
-            Suit::Diamond => {
-                write!(f, "D")
-            }
-            Suit::Heart => {
-                write!(f, "H")
-            }
-            Suit::Spade => {
-                write!(f, "S")
-            }
-        }
+    fn format_long(&self, f: &mut Formatter<'_>) -> Result {
+        Debug::fmt(self, f)
     }
 }
+
 
 #[allow(dead_code)]
 pub struct SuitOrder;
