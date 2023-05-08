@@ -1,6 +1,7 @@
-use std::fmt::*;
 use crate::misc::DbgFmtFn;
+use std::fmt::*;
 
+#[allow(dead_code)]
 pub enum FormatType {
     Debug,
     Display,
@@ -9,29 +10,24 @@ pub enum FormatType {
     Long,
 }
 
-pub trait Formattable<T = Self>: Display + Debug
-    where T: Display + Debug {
+pub trait Formattable<T = Self>: Debug
+where
+    T: Debug,
+{
     fn format_emoji(&self, f: &mut Formatter<'_>) -> Result;
     fn format_short(&self, f: &mut Formatter<'_>) -> Result;
     fn format_long(&self, f: &mut Formatter<'_>) -> Result;
 
     fn format(&self, format_type: &FormatType, f: &mut Formatter<'_>) -> Result {
         match format_type {
-            FormatType::Debug => {
-                Debug::fmt(&self, f)
-            },
+            FormatType::Debug => Debug::fmt(self, f),
             FormatType::Display => {
-                Display::fmt(&self,f)
-            },
-            FormatType::Emoji => {
-                self.format_emoji(f)
-            },
-            FormatType::Short => {
-                self.format_short(f)
-            },
-            FormatType::Long => {
-                self.format_long(f)
+                //Display::fmt(self,f)
+                Debug::fmt(self, f)
             }
+            FormatType::Emoji => self.format_emoji(f),
+            FormatType::Short => self.format_short(f),
+            FormatType::Long => self.format_long(f),
         }
     }
 

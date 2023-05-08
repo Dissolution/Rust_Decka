@@ -1,6 +1,5 @@
-
-use std::fmt::*;
 use crate::format::Formattable;
+use std::fmt::*;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum Rank {
@@ -70,47 +69,7 @@ impl Display for Rank {
 
 impl Formattable for Rank {
     fn format_emoji(&self, f: &mut Formatter<'_>) -> Result {
-        match self {
-            Rank::Ace => {
-                write!(f, "A")
-            }
-            Rank::Two => {
-                write!(f, "2")
-            }
-            Rank::Three => {
-                write!(f, "3")
-            }
-            Rank::Four => {
-                write!(f, "4")
-            }
-            Rank::Five => {
-                write!(f, "5")
-            }
-            Rank::Six => {
-                write!(f, "6")
-            }
-            Rank::Seven => {
-                write!(f, "7")
-            }
-            Rank::Eight => {
-                write!(f, "8")
-            }
-            Rank::Nine => {
-                write!(f, "9")
-            }
-            Rank::Ten => {
-                write!(f, "X")
-            }
-            Rank::Jack => {
-                write!(f, "J")
-            }
-            Rank::Queen => {
-                write!(f, "Q")
-            }
-            Rank::King => {
-                write!(f, "K")
-            }
-        }
+        Formattable::format_short(self, f)
     }
 
     fn format_short(&self, f: &mut Formatter<'_>) -> Result {

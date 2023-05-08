@@ -1,14 +1,14 @@
-use crate::decision::Decision;
+//use crate::decision::Decision;
 use std::fmt::*;
 
 #[derive(Clone, Debug)]
 pub struct GameResult {
     pub win: bool,
     pub pile_count: usize,
-    pub initial_state: String,
-    pub final_state: String,
+    //pub initial_state: String,
+    //pub final_state: String,
     pub decision_chance: f64,
-    pub decisions: Vec<Decision>,
+    //pub decisions: Vec<Decision>,
 }
 
 impl Display for GameResult {
@@ -22,10 +22,11 @@ impl Display for GameResult {
             self.pile_count,
             self.decision_chance * 100.0
         )?;
-        f.write_char('[')?;
-        for decision in self.decisions.iter() {
-            Display::fmt(decision, f)?;
-        }
+        // f.write_char('[')?;
+        // for decision in self.decisions.iter() {
+        //     Display::fmt(decision, f)?;
+        // }
+        // f.write_char(']')?;
         Ok(())
     }
 }

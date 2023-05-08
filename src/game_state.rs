@@ -1,6 +1,7 @@
 use crate::card::*;
 use crate::card_pile::CardPile;
 use crate::decision::Decision;
+use crate::format::{FormatType, Formattable};
 use crate::game_result::GameResult;
 use crate::macros::*;
 use crate::misc::*;
@@ -14,9 +15,9 @@ pub struct GameState {
     pub piles: [CardPile; 4],
     pub discard: CardPile,
 
-    pub initial_state: String,
+    //pub initial_state: String,
     pub decision_chance: f64,
-    pub decisions: Vec<Decision>,
+    //pub decisions: Vec<Decision>,
 }
 
 fn pile_move_card(source_pile: &mut CardPile, dest_pile: &mut CardPile) {
@@ -35,10 +36,15 @@ fn suit_rank_compare(left: &Card, right: &Card) -> Ordering {
     }
 }
 
+struct FillHoles {
+    pub total_decisions: i32,
+    pub hole_fillers: Vec<(usize, Vec<usize>)>,
+}
+
 impl GameState {
     pub fn new(deck: Vec<Card>) -> GameState {
         GameState {
-            initial_state: format!("{:?}", deck),
+            //initial_state: String::new(),
             deck,
             piles: [
                 Vec::with_capacity(13),
@@ -48,7 +54,7 @@ impl GameState {
             ],
             discard: Vec::with_capacity(52),
             decision_chance: 1.0,
-            decisions: Vec::new(),
+            //decisions: Vec::new(),
         }
     }
 
@@ -74,10 +80,10 @@ impl GameState {
             Some(GameResult {
                 win: is_win,
                 pile_count,
-                initial_state: self.initial_state.clone(),
-                final_state: self.short_display(),
+                //initial_state: self.initial_state.clone(),
+                //final_state: Formattable::format_string(self, &FormatType::Emoji),
                 decision_chance: self.decision_chance,
-                decisions: self.decisions.clone(),
+                //decisions: self.decisions.clone(),
             })
         }
     }
@@ -137,18 +143,18 @@ impl GameState {
                 self.collide();
 
                 // check for fillable holes
-                let holes = self.find_fillable_holes();
+                let fill_holes: FillHoles = self.find_fillable_holes();
 
                 // if there aren't any, we can go to the deal
-                if holes.is_empty() {
+                if fill_holes.total_decisions == 0 {
                     break;
                 }
 
                 // If we have exactly one hole and one pile that can fill it
-                if holes.len() == 1 && holes[0].1.len() == 1 {
+                if fill_holes.total_decisions == 1 {
                     // This is an easy move!
-                    let hole_index = &holes[0].0;
-                    let fill_index = &holes[0].1[0];
+                    let hole_index = &fill_holes.hole_fillers[0].0;
+                    let fill_index = &fill_holes.hole_fillers[0].1[0];
                     self.move_top_card(*fill_index, *hole_index);
 
                     // go back to collide + check for holes
@@ -156,28 +162,26 @@ impl GameState {
                 }
 
                 // We have to split
-                let clone_count: usize = holes.iter().map(|h| h.1.len()).sum();
-                assert!(clone_count > 1);
-                let multiplier = 1.0 / clone_count as f64;
+                let multiplier = 1.0 / fill_holes.total_decisions as f64;
 
                 let mut game_states = Vec::with_capacity(4);
-                for hole in holes.iter() {
+                for hole in fill_holes.hole_fillers.iter() {
                     let (hole_index, file_indices) = hole;
                     for fill_index in file_indices.iter() {
-                        let decision = Decision {
-                            deal_count: 13_usize - (self.deck.len() / 4_usize),
-                            fill_pile: *fill_index,
-                            hole_pile: *hole_index,
-                        };
+                        // let decision = Decision {
+                        //     deal_count: 13_usize - (self.deck.len() / 4_usize),
+                        //     fill_pile: *fill_index,
+                        //     hole_pile: *hole_index,
+                        // };
                         let mut clone: GameState = self.clone();
                         clone.decision_chance *= multiplier;
-                        clone.decisions.push(decision);
+                        //clone.decisions.push(decision);
                         clone.move_top_card(*fill_index, *hole_index);
                         game_states.push(clone);
                     }
                 }
 
-                assert_eq!(game_states.len(), clone_count);
+                assert_eq!(game_states.len(), fill_holes.total_decisions as usize);
                 // return all the possible next game states
                 return Some(game_states);
             }
@@ -198,7 +202,10 @@ impl GameState {
         }
     }
 
-    pub fn find_fillable_holes(&self) -> Vec<(usize, Vec<usize>)> {
+
+
+    fn find_fillable_holes(&self) -> FillHoles {
+        let mut decisions = 0;
         let mut holes: Vec<(usize, Vec<usize>)> = Vec::with_capacity(4);
         let mut fillers: Vec<usize> = Vec::with_capacity(3);
 
@@ -215,6 +222,7 @@ impl GameState {
                 }
                 if piles[fill_pile].len() >= 2 {
                     fillers.push(fill_pile);
+                    decisions+=1;
                 }
             }
             if !fillers.is_empty() {
@@ -222,7 +230,10 @@ impl GameState {
                 fillers.clear();
             }
         }
-        holes
+        FillHoles {
+            total_decisions: decisions,
+            hole_fillers: holes,
+        }
     }
 }
 
@@ -236,26 +247,36 @@ impl Display for GameState {
     }
 }
 
-impl ShortDisplay for GameState {
-    fn short_display(&self, f: &mut Formatter<'_>) -> Result {
-        
-    }
-}
-
-impl LongDisplay for GameState {
-    fn display(&self, f: &mut Formatter<'_>) -> Result {
-        f.write_str("Deck:")?;
-        self.deck.display(f)?;
-        f.write_str("\tPileA:")?;
-        self.piles[0].display(f)?;
-        f.write_str("\tPileB:")?;
-        self.piles[1].display(f)?;
-        f.write_str("\tPileC:")?;
-        self.piles[2].display(f)?;
-        f.write_str("\tPileD:")?;
-        self.piles[3].display(f)?;
-        f.write_str("\tDiscard:")?;
-        self.discard.display(f)?;
+impl Formattable for GameState {
+    fn format_emoji(&self, f: &mut Formatter<'_>) -> Result {
+        f.write_str("deck:")?;
+        self.deck.format_emoji(f)?;
+        f.write_char('\n')?;
+        for (i, pile) in self.piles.iter().enumerate() {
+            write!(f, "pile{}:", i)?;
+            pile.format_emoji(f)?;
+            f.write_char('\n')?;
+        }
+        f.write_str("discard:")?;
+        self.discard.format_emoji(f)?;
         Ok(())
+    }
+
+    fn format_short(&self, f: &mut Formatter<'_>) -> Result {
+        f.write_str("deck:")?;
+        self.deck.format_short(f)?;
+        f.write_char('\n')?;
+        for (i, pile) in self.piles.iter().enumerate() {
+            write!(f, "pile{}:", i)?;
+            pile.format_short(f)?;
+            f.write_char('\n')?;
+        }
+        f.write_str("discard:")?;
+        self.discard.format_short(f)?;
+        Ok(())
+    }
+
+    fn format_long(&self, f: &mut Formatter<'_>) -> Result {
+        self.format_short(f)
     }
 }

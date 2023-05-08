@@ -1,5 +1,4 @@
 #[macro_export]
-
 #[allow(unused_macros)]
 macro_rules! ok_or_continue {
     ($res:expr) => {
@@ -14,7 +13,6 @@ macro_rules! ok_or_continue {
 }
 #[allow(unused_imports)]
 pub(crate) use ok_or_continue;
-
 
 #[allow(unused_macros)]
 macro_rules! some_or_continue {

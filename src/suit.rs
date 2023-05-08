@@ -1,5 +1,5 @@
-use std::fmt::*;
 use crate::format::Formattable;
+use std::fmt::*;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 //#[non_exhaustive]
@@ -72,16 +72,16 @@ impl Formattable for Suit {
     fn format_short(&self, f: &mut Formatter<'_>) -> Result {
         match self {
             Suit::Club => {
-                write!(f, "♣")
+                write!(f, "♣") // ♧
             }
             Suit::Diamond => {
-                write!(f, "♦")
+                write!(f, "♦") // ♢
             }
             Suit::Heart => {
-                write!(f, "♥")
+                write!(f, "♥") // ♡
             }
             Suit::Spade => {
-                write!(f, "♠")
+                write!(f, "♠") // ♤
             }
         }
     }
@@ -90,7 +90,6 @@ impl Formattable for Suit {
         Debug::fmt(self, f)
     }
 }
-
 
 #[allow(dead_code)]
 pub struct SuitOrder;
